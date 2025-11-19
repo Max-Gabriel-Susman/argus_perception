@@ -1,0 +1,37 @@
+name: ROS 2 CI (argus_perception)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Jammy + Humble dev image (same as for argus_sensors)
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-jammy-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # This will:
+      #  - create a ROS workspace
+      #  - rosdep install dependencies from package.xml
+      #  - colcon build --packages-up-to argus_perception
+      #  - colcon test for argus_perception
+      - name: Build and test argus_perception
+        uses: ros-tooling/action-ros-ci@v0.4
+        with:
+          package-name: argus_perception
+          target-ros2-distro: humble
+          colcon-defaults: |
+            {
+              "build": {
+                "symlink-install": true
+              }
+            }
+
